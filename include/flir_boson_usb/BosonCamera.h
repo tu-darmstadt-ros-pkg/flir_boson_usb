@@ -93,6 +93,7 @@ class BosonCamera : public nodelet::Nodelet
     int8_t thermal_sensor_name[20];  // To store the sensor name
     struct v4l2_buffer bufferinfo;
     void* buffer_start;
+    int rotate90;
 
     cv::Mat thermal16, thermal16_linear, thermal16_linear_zoom,
             thermal_rgb_zoom, thermal_luma, thermal_rgb;
