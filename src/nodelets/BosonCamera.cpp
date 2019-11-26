@@ -54,7 +54,7 @@ void BosonCamera::onInit()
   pnh.param<bool>("zoon_enable", zoom_enable, false);
   pnh.param<std::string>("sensor_type", sensor_type_str, "Boson_640");
   pnh.param<std::string>("camera_info_url", camera_info_url, "");
-  pnh.param("rotate90", rotate90, 0);
+  pnh.param<int>("rotate90", rotate90, 0);
 
   ROS_INFO("flir_boson_usb - Got frame_id: %s.", frame_id.c_str());
   ROS_INFO("flir_boson_usb - Got dev: %s.", dev_path.c_str());
@@ -382,11 +382,11 @@ void BosonCamera::captureAndPublish(const ros::TimerEvent& evt)
       cv::Mat thermal16_rotated(thermal16);
 
       if (rotate90 == 1)
-        cv::rotate(thermal16, thermal16_rotated,cv::ROTATE_90_CLOCKWISE);
+        cv::rotate(thermal16, thermal16_rotated, cv::ROTATE_90_CLOCKWISE);
       else if (rotate90 == 2)
-        cv::rotate(thermal16, thermal16_rotated,cv::ROTATE_180);
+        cv::rotate(thermal16, thermal16_rotated, cv::ROTATE_180);
       else if (rotate90 == 3)
-        cv::rotate(thermal16, thermal16_rotated,cv::ROTATE_90_COUNTERCLOCKWISE);
+        cv::rotate(thermal16, thermal16_rotated, cv::ROTATE_90_COUNTERCLOCKWISE);
 
       cv_img.image = thermal16_rotated;
       cv_img.header.stamp = ros::Time::now();
