@@ -334,11 +334,20 @@ void BosonCamera::captureAndPublish(const ros::TimerEvent& evt)
     ci(new sensor_msgs::CameraInfo(camera_info->getCameraInfo()));
 
   ci->header.frame_id = frame_id;
+  
+  static int consecutive_error_count = 0;
+  
+  if (consecutive_error_count > 10){
+    ROS_ERROR("flir_boson_usb - Repeated consecutive read error from cam, exiting!");  
+    ros::shutdown();
+    return;
+  }
 
   // Put the buffer in the incoming queue.
   if (ioctl(fd, VIDIOC_QBUF, &bufferinfo) < 0)
   {
     ROS_ERROR("flir_boson_usb - VIDIOC_QBUF error. Failed to queue the image buffer.");
+    consecutive_error_count++;
     return;
   }
 
@@ -346,8 +355,11 @@ void BosonCamera::captureAndPublish(const ros::TimerEvent& evt)
   if (ioctl(fd, VIDIOC_DQBUF, &bufferinfo) < 0)
   {
     ROS_ERROR("flir_boson_usb - VIDIOC_DQBUF error. Failed to dequeue the image buffer.");
+    consecutive_error_count++;
     return;
   }
+  
+  consecutive_error_count = 0;
 
   if (video_mode == RAW16)
   {
